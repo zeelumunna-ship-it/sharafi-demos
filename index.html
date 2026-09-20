@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedSlot Demo | SHaraFI Labs</title>
+</head>
+<body>
+
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><span>✚</span><em>MedSlot</em></div>
+  <div class="nav">
+    <button class="active" onclick="showView('dashboard',this)">▣ <span>Dashboard</span></button>
+    <button onclick="showView('appointments',this)">▦ <span>Appointments</span></button>
+    <button onclick="showView('calendar',this)">◫ <span>Calendar</span></button>
+    <button onclick="showView('schedule',this)">◷ <span>Schedule</span></button>
+    <button onclick="showView('queue',this)">☷ <span>Token / Queue</span></button>
+    <button onclick="showView('booking',this)">＋ <span>Patient Booking</span></button>
+  </div>
+  <div class="demo"><b>DEMO MODE</b><br>This is a sales prototype. Data is simulated for presentation.</div>
+</aside>
+
+<main class="main">
+<header class="top">
+  <div><h1 id="pageTitle">Good morning, Doctor 👋</h1><p id="pageSub">Here's your clinic overview for today.</p></div>
+  <div class="doctor-chip"><div class="avatar">DA</div><div><b>Dr. Ahmed</b><br><small>General Physician</small></div></div>
+</header>
+
+<section id="dashboard" class="view active">
+  <div class="cards">
+    <div class="card stat"><small>Today's Appointments</small><strong>18</strong><span class="status confirmed">+3 today</span></div>
+    <div class="card stat"><small>Available Slots</small><strong>12</strong><span class="status available">Open</span></div>
+    <div class="card stat"><small>Completed</small><strong>11</strong><span class="status confirmed">61%</span></div>
+    <div class="card stat"><small>Cancelled</small><strong>2</strong><span class="status booked">Need attention</span></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="section-head"><h2>Today's Appointments</h2><button class="link" onclick="showView('appointments')">View all →</button></div>
+      <table><thead><tr><th>Time</th><th>Patient</th><th>Type</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>09:00 AM</td><td>Raj Kumar</td><td>Consultation</td><td><span class="status confirmed">Confirmed</span></td></tr>
+        <tr><td>09:30 AM</td><td>Priya Sharma</td><td>Follow-up</td><td><span class="status waiting">Waiting</span></td></tr>
+        <tr><td>10:00 AM</td><td>—</td><td>—</td><td><span class="status available">Available</span></td></tr>
+        <tr><td>10:30 AM</td><td>Suresh Reddy</td><td>Consultation</td><td><span class="status confirmed">Confirmed</span></td></tr>
+      </tbody></table>
+    </div>
+    <div class="card">
+      <div class="section-head"><h2>Quick Actions</h2></div>
+      <button class="btn primary" style="width:100%;margin:5px 0" onclick="showView('booking')">＋ Book Patient</button>
+      <button class="btn secondary" style="width:100%;margin:5px 0" onclick="showView('schedule')">◷ Manage Schedule</button>
+      <button class="btn secondary" style="width:100%;margin:5px 0" onclick="showView('queue')">☷ Open Token Queue</button>
+    </div>
+  </div>
+</section>
+
+<section id="appointments" class="view">
+<div class="card">
+<div class="section-head"><h2>Appointments — 18 September 2026</h2><button class="btn primary" onclick="showView('booking')">＋ New Appointment</button></div>
+<table><thead><tr><th>Time</th><th>Token</th><th>Patient</th><th>Phone</th><th>Type</th><th>Status</th><th>Action</th></tr></thead>
+<tbody id="apptBody">
+<tr><td>09:00 AM</td><td>#16</td><td>Raj Kumar</td><td>98765 43210</td><td>Consultation</td><td><span class="status confirmed">Confirmed</span></td><td><button class="btn secondary" onclick="details('Raj Kumar','09:00 AM','#16')">View</button></td></tr>
+<tr><td>09:30 AM</td><td>#17</td><td>Priya Sharma</td><td>98490 12345</td><td>Follow-up</td><td><span class="status waiting">Waiting</span></td><td><button class="btn secondary" onclick="details('Priya Sharma','09:30 AM','#17')">View</button></td></tr>
+<tr><td>10:00 AM</td><td>—</td><td>Available</td><td>—</td><td>—</td><td><span class="status available">Available</span></td><td><button class="btn primary" onclick="quickBook('10:00 AM')">Book</button></td></tr>
+<tr><td>10:30 AM</td><td>#18</td><td>Suresh Reddy</td><td>99001 22334</td><td>Consultation</td><td><span class="status confirmed">Confirmed</span></td><td><button class="btn secondary" onclick="details('Suresh Reddy','10:30 AM','#18')">View</button></td></tr>
+</tbody></table></div>
+</section>
+
+<section id="calendar" class="view">
+<div class="card"><div class="section-head"><h2>September 2026</h2><button class="btn primary" onclick="showView('booking')">Book Appointment</button></div>
+<div class="calendar" id="cal"></div></div>
+<div class="card" style="margin-top:20px"><h2>Selected Date: 18 September</h2><p style="color:var(--muted)">18 appointments • 12 slots available</p><div class="slotgrid" id="calendarSlots"></div></div>
+</section>
+
+<section id="schedule" class="view">
+<div class="schedule">
+<div class="card"><h2>Consultation Schedule</h2>
+<div class="field"><label>Slot Duration</label><select><option>15 minutes</option><option>20 minutes</option><option>30 minutes</option></select></div>
+<div class="field"><label>Morning Session</label><div style="display:flex;gap:8px"><input value="09:00 AM"><input value="01:00 PM"></div></div>
+<div class="field"><label>Evening Session</label><div style="display:flex;gap:8px"><input value="05:00 PM"><input value="08:00 PM"></div></div>
+<button class="btn primary" onclick="toast('Schedule saved successfully')">Save Schedule</button>
+</div>
+<div class="card"><h2>Working Days</h2>
+<div class="toggle">Monday <input type="checkbox" checked></div><div class="toggle">Tuesday <input type="checkbox" checked></div><div class="toggle">Wednesday <input type="checkbox" checked></div><div class="toggle">Thursday <input type="checkbox" checked></div><div class="toggle">Friday <input type="checkbox" checked></div><div class="toggle">Saturday <input type="checkbox"></div><div class="toggle">Sunday <input type="checkbox"></div>
+</div></div>
+<div class="card" style="margin-top:20px"><h2>Blocked Dates & Slots</h2><p style="color:var(--muted)">No blocked dates. Block a date for leave or individual slots for personal work.</p><button class="btn danger" onclick="toast('Demo: date blocking opened')">Block Date</button></div>
+</section>
+
+<section id="queue" class="view">
+<div class="card"><div class="section-head"><h2>Live Token Queue</h2><button class="btn primary" onclick="nextToken()">Call Next Patient</button></div>
+<div class="queue"><div class="now"><small>NOW CONSULTING</small><div class="token" id="currentToken">#17</div><h2>Priya Sharma</h2><p>Follow-up consultation</p></div>
+<div class="next"><small>NEXT PATIENT</small><div class="token" id="nextToken">#18</div><h2 id="nextName">Suresh Reddy</h2><p>Consultation</p></div></div></div>
+</section>
+
+<section id="booking" class="view">
+<div class="patient-wrap">
+<div class="steps"><div class="step on" id="s1">1. Doctor</div><div class="step" id="s2">2. Date & Slot</div><div class="step" id="s3">3. Patient Details</div><div class="step" id="s4">4. Confirmed</div></div>
+<div class="card" id="bookStep1">
+<div class="doctor-profile"><div class="doctor-big">DA</div><div><h2 style="margin:0">Dr. Ahmed</h2><p style="margin:5px 0;color:var(--muted)">General Physician • 12 years experience</p><span class="status confirmed">Clinic Open Today</span></div></div>
+<hr style="border:0;border-top:1px solid var(--line);margin:22px 0"><h3>ABC Medical Centre</h3><p style="color:var(--muted)">Main Road, Kanekal • Consultation ₹300</p>
+<button class="btn primary" onclick="bookStep(2)">Continue →</button>
+</div>
+<div class="card" id="bookStep2" style="display:none"><h2>Select Date & Time</h2><div class="field"><label>Date</label><select><option>18 September 2026 — Today</option><option>19 September 2026</option><option>21 September 2026</option></select></div><h3>Available Slots</h3><div class="slotgrid" id="bookSlots"></div><button class="btn primary" onclick="bookStep(3)" style="margin-top:18px">Continue →</button></div>
+<div class="card" id="bookStep3" style="display:none"><h2>Patient Details</h2><div class="field"><label>Patient Name</label><input id="pname" placeholder="Enter patient name"></div><div class="field"><label>Mobile Number</label><input id="phone" placeholder="10-digit mobile number"></div><div style="display:flex;gap:12px"><div class="field" style="flex:1"><label>Age</label><input id="age" placeholder="Age"></div><div class="field" style="flex:1"><label>Gender</label><select><option>Male</option><option>Female</option><option>Other</option></select></div></div><div class="field"><label>Reason for Visit</label><input placeholder="e.g. Fever, follow-up, consultation"></div><button class="btn primary" onclick="confirmBooking()">Confirm Appointment</button></div>
+<div class="card confirm" id="bookStep4" style="display:none"><div class="check">✓</div><h2>Appointment Confirmed!</h2><p style="color:var(--muted)">Your appointment has been successfully booked.</p><div class="booking-box"><div class="row"><span>Doctor</span><b>Dr. Ahmed</b></div><div class="row"><span>Patient</span><b id="confirmName">Rahul Kumar</b></div><div class="row"><span>Date</span><b>18 September 2026</b></div><div class="row"><span>Time</span><b id="confirmTime">10:00 AM</b></div><div class="row"><span>Token</span><b id="confirmToken">#19</b></div><div class="row"><span>Booking ID</span><b>APT-260918-019</b></div></div><button class="btn secondary" onclick="showView('dashboard')">Back to Dashboard</button></div>
+</div>
+</section>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal"><div class="modal-card"><button class="close" onclick="closeModal()">×</button><h2>Appointment Details</h2><div id="modalText"></div><button class="btn primary" style="margin-top:15px" onclick="closeModal()">Close</button></div></div>
+
+<script>
+const titles={dashboard:['Good morning, Doctor 👋',"Here's your clinic overview for today."],appointments:['Appointments','Manage your patients and consultation schedule.'],calendar:['Calendar','View availability and appointments by date.'],schedule:['Schedule Settings','Configure your consultation hours and slot duration.'],queue:['Live Token Queue','Keep your clinic waiting room organized.'],booking:['Patient Booking Demo','Experience how a patient can book an appointment online.']};
+function showView(id,btn){
+ document.querySelectorAll('.view').forEach(x=>x.classList.remove('active')); document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active')); if(btn)btn.classList.add('active');
+ document.getElementById('pageTitle').textContent=titles[id][0];document.getElementById('pageSub').textContent=titles[id][1];
+ if(id==='calendar')renderCalendar();
+ if(id==='booking')resetBooking();
+}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2200)}
+function details(name,time,token){document.getElementById('modalText').innerHTML=`<div class="booking-box" style="margin:0"><div class="row"><span>Patient</span><b>${name}</b></div><div class="row"><span>Time</span><b>${time}</b></div><div class="row"><span>Token</span><b>${token}</b></div><div class="row"><span>Type</span><b>Consultation</b></div></div>`;document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function quickBook(time){showView('booking');bookStep(2);setTimeout(()=>{const s=[...document.querySelectorAll('#bookSlots .slot')].find(x=>x.textContent===time);if(s){document.querySelectorAll('#bookSlots .slot').forEach(x=>x.classList.remove('selected'));s.classList.add('selected')}},50)}
+function makeSlots(target){const times=['09:00 AM','09:15 AM','09:30 AM','09:45 AM','10:00 AM','10:15 AM','10:30 AM','10:45 AM','11:00 AM','11:15 AM','11:30 AM','11:45 AM'];const busy=['09:15 AM','09:45 AM','10:30 AM','11:15 AM'];target.innerHTML=times.map(t=>`<button class="slot ${busy.includes(t)?'busy':''}" ${busy.includes(t)?'disabled':''} onclick="selectSlot(this)">${t}</button>`).join('')}
+function selectSlot(el){document.querySelectorAll('#bookSlots .slot').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');window.selectedTime=el.textContent}
+function bookStep(n){[1,2,3,4].forEach(i=>{document.getElementById('bookStep'+i).style.display=i===n?'block':'none';document.getElementById('s'+i).classList.toggle('on',i===n)})}
+function resetBooking(){bookStep(1);window.selectedTime='10:00 AM';makeSlots(document.getElementById('bookSlots'))}
+function confirmBooking(){const name=document.getElementById('pname').value.trim()||'Rahul Kumar';document.getElementById('confirmName').textContent=name;document.getElementById('confirmTime').textContent=window.selectedTime||'10:00 AM';bookStep(4);toast('Appointment booked successfully')}
+function nextToken(){document.getElementById('currentToken').textContent='#18';document.getElementById('nextToken').textContent='#19';document.getElementById('nextName').textContent='Anil Kumar';toast('Token #18 is now consulting')}
+function renderCalendar(){const c=document.getElementById('cal');const names=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];let html=names.map(n=>`<div style="text-align:center;color:#697386;font-size:12px;font-weight:700;padding:5px">${n}</div>`).join('');for(let i=1;i<=30;i++){const sel=i===18;html+=`<div class="day ${sel?'selected':''}" onclick="toast('Selected ${i} September')"><b>${i}</b>${[2,4,7,10,12,15,18,19,21,24,26,29].includes(i)?'<div class="dot"></div>':''}</div>`}c.innerHTML=html;makeSlots(document.getElementById('calendarSlots'))}
+renderCalendar();resetBooking();
+</script>
+
+</body>
+</html>
