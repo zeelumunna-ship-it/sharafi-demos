@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TeachMate Demo | SHaraFI Labs</title>
+</head>
+<body>
+
+<div id="app"></div>
+<script>
+const KEY='teachmate_demo_v1';
+const seed={
+ students:[
+  {name:'Afreen',email:'',mobile:'',guardian:'',address:'',gender:'Female',class:'DCA',admission:'01/06/2026'},
+  {name:'Ariz',email:'',mobile:'',guardian:'',address:'',gender:'Male',class:'Python Programming',admission:'01/06/2026'},
+  {name:'Ayesha',email:'',mobile:'',guardian:'',address:'',gender:'Female',class:'DCA',admission:'02/06/2026'},
+  {name:'Gouse',email:'',mobile:'',guardian:'',address:'',gender:'Male',class:'DCA',admission:'03/06/2026'},
+  {name:'Kausar',email:'',mobile:'',guardian:'',address:'',gender:'Female',class:'DCA',admission:'03/06/2026'},
+  {name:'M.Rehana',email:'',mobile:'',guardian:'',address:'',gender:'Female',class:'DCA',admission:'04/06/2026'}
+ ],
+ classes:[
+  {name:'Java Programming',teacher:'',room:'',timing:''},
+  {name:'Python Programming',teacher:'',room:'',timing:''},
+  {name:'DCA',teacher:'',room:'',timing:'',academic:'2026'}
+ ],
+ fees:[{student:'',total:'150',mode:'',date:'',type:'Monthly fee',paid:'150',pending:'0',remarks:''}],
+ homework:[
+  {subject:'English',title:'The thorn of Titanium',description:'write 2 nd question 3 times',assigned:'07/09/2026',due:'08/09/2026',class:'DCA'},
+  {subject:'Hindi',title:'Tere naam',description:'1 question from 1st lesson 2 times',assigned:'06/09/2026',due:'07/09/2026',class:'Python Programming'}
+ ],
+ notices:[{title:'Vinayaka Chavithi Holiday',description:'Dear students! 14 sep 2026 institute సెలవు because of Vinayaka Chavithi. institute 15 sep nundi yathathadanga nadustundi',date:'14/09/2026',audience:'All Classes'}],
+ reports:[{student:'',subject:'Hindi',marks:'75',max:'100',grade:'A',remarks:'',attendance:''}],
+ attendance:{},
+ institution:{name:'Riya',id:'INST-C151OAA4',owner:'QJpk9tTHjqVQmyExsWxnRzuRgcX2'}
+};
+let db;
+try{db=JSON.parse(localStorage.getItem(KEY))||structuredClone(seed)}catch(e){db=structuredClone(seed)}
+function save(){localStorage.setItem(KEY,JSON.stringify(db))}
+const app=document.getElementById('app');
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function header(title,sub){return `<div class="top"><div class="brand">TEACHMATE</div><h1>${title}</h1><p>${sub}</p></div>`}
+function layout(title,sub,body){app.innerHTML=header(title,sub)+`<div class="content">${body}</div><button class="back" onclick="back()">‹</button>`}
+function back(){show('dashboard')}
+function show(page){
+ if(page==='dashboard') return dashboard();
+ if(page==='students') return students();
+ if(page==='classes') return classes();
+ if(page==='fees') return fees();
+ if(page==='attendance') return attendance();
+ if(page==='viewAttendance') return viewAttendance();
+ if(page==='homework') return homework();
+ if(page==='notices') return notices();
+ if(page==='reports') return reports();
+ if(page==='profile') return profile();
+}
+function dashboard(){
+ const tiles=[['👤','Students','Manage student records','students','#3295e9'],['🏫','Classes','Manage classes','classes','#7046df'],['▣','Fees','Track student fees','fees','#16afbf'],['☑','Attendance','Track attendance','attendance','#13b97b'],['📖','Homework','Manage homework','homework','#ff9d16'],['🔊','Notices','Publish notices','notices','#ef4d80'],['📄','Report Cards','Manage report cards','reports','#9b7be8'],['🏫','Institution Profile','Your coaching center','profile','#5bc1c7']];
+ const html=`<div class="card"><div class="small" style="font-weight:700">YOUR INSTITUTION</div><div style="font-size:29px;color:var(--blue);font-weight:800;margin-top:28px">${esc(db.institution.id)}</div></div>
+ <h2 class="section-title">Today at a glance</h2><div class="stats"><div class="stat"><b>${db.students.length}</b><span>Students</span></div><div class="stat"><b>${db.classes.length}</b><span>Classes</span></div><div class="stat"><b>${db.fees.length}</b><span>Fees</span></div><div class="stat"><b>${Object.keys(db.attendance).length?Object.keys(db.attendance).length:28}</b><span>Attendance</span></div></div>
+ <h2 class="section-title">Manage your institution</h2><div class="tile-grid">${tiles.map(t=>`<button class="tile" onclick="show('${t[3]}')" style="border:1px solid var(--line)"><div class="ico" style="background:${t[4]}">${t[0]}</div><h3>${t[1]}</h3><p>${t[2]}</p></button>`).join('')}</div>`;
+ layout('Admin Dashboard','Welcome, zillu',html)
+}
+function addBtn(label,fn){return `<button class="primary-wide" onclick="${fn}">+ ${label}</button>`}
+function cardActions(editFn,delFn,extra=''){return `<div class="actions"><button onclick="${editFn}">Edit</button><button class="danger" onclick="${delFn}">Delete</button>${extra}</div>`}
+function students(){
+ let body=addBtn('Add Students',`modal('student')`);
+ db.students.forEach((x,i)=>body+=`<div class="card item"><h3>${esc(x.name)}</h3><div class="info-row"><div>Email: ${esc(x.email)}</div><div>Mobile: ${esc(x.mobile)}</div><div>Guardian: ${esc(x.guardian)}</div><div>Class: ${esc(x.class)}</div></div>${cardActions(`modal('student',${i})`,`del('students',${i})`)}</div>`);
+ layout('Students','Manage Students',body)
+}
+function classes(){
+ let body=addBtn('Add Classes',`modal('class')`);
+ db.classes.forEach((x,i)=>body+=`<div class="card item"><h3>${esc(x.name)}</h3><div class="info-row"><div>Teacher: ${esc(x.teacher)}</div><div>Timing: ${esc(x.timing)}</div><div>Name: ${esc(x.name)}</div><div>Room: ${esc(x.room)}</div>${x.academic?`<div>Academic Year: ${esc(x.academic)}</div>`:''}</div>${cardActions(`modal('class',${i})`,`del('classes',${i})`)}</div>`);
+ layout('Classes','Manage Classes',body)
+}
+function fees(){
+ let body=addBtn('Add Fees',`modal('fee')`);
+ db.fees.forEach((x,i)=>body+=`<div class="card item"><h3>Fees</h3><div class="info-row"><div>Student Id: ${esc(x.student)}</div><div>Total Amount: ${esc(x.total)}</div><div>Payment Mode: ${esc(x.mode)}</div><div>Payment Date: ${esc(x.date)}</div><div>Fee Type: ${esc(x.type)}</div><div>Paid Amount: ${esc(x.paid)}</div><div>Pending Amount: ${esc(x.pending)}</div><div>Remarks: ${esc(x.remarks)}</div></div>${cardActions(`modal('fee',${i})`,`del('fees',${i})`)}</div>`);
+ layout('Fees','Manage Fees',body)
+}
+function attendance(){
+ let rows=db.students.map((x,i)=>`<div class="att-row"><div class="att-num">${i+1}</div><div><div class="att-name">${esc(x.name)}</div><span class="att-class">${esc(x.class)}</span></div><select id="att${i}"><option>Select..</option><option>Present</option><option>Absent</option><option>Leave</option><option>Holiday</option></select></div>`).join('');
+ const today='20/09/2026';
+ layout('Attendance','Mark attendance for your students',`<button class="outline-wide" onclick="show('viewAttendance')">View Attendance</button><div class="card"><div class="field"><label>Attendance Date</label><input value="${today}"></div><div class="field"><label>Class Filter</label><select><option>All Classes</option>${db.classes.map(c=>`<option>${esc(c.name)}</option>`).join('')}</select></div></div><h2 class="section-title" style="font-size:27px">${db.students.length} students • ${today}</h2>${rows}<button class="primary-wide" onclick="saveAttendance()">Save Attendance</button>`)
+}
+function saveAttendance(){db.students.forEach((_,i)=>{let v=document.getElementById('att'+i)?.value;if(v&&v!=='Select..')db.attendance[i]=v});save();alert('Attendance saved successfully');}
+function viewAttendance(){
+ let date='20/09/2026', vals=db.students.map((x,i)=>db.attendance[i]||'Not Marked'), counts={Present:0,Absent:0,Leave:0,Holiday:0,'Not Marked':0};vals.forEach(v=>counts[v]++);
+ let rows=db.students.map((x,i)=>`<div class="att-row"><div class="att-num">${i+1}</div><div><div class="att-name">${esc(x.name)}</div><span class="att-class">${esc(x.class)}</span></div><span class="small" style="text-align:center;font-weight:700">${vals[i]}</span></div>`).join('');
+ layout('View Attendance','View attendance date wise',`<div class="card"><div class="field"><label>Attendance Date</label><input value="${date}"></div><div class="field"><label>Class Filter</label><select><option>All Classes</option></select></div></div><h2 class="section-title" style="font-size:25px">${date} • ${db.students.length} students • ${counts['Not Marked']} not marked</h2><div class="stats"><div class="stat"><b>${counts.Present}</b><span>Present</span></div><div class="stat"><b>${counts.Absent}</b><span>Absent</span></div><div class="stat"><b>${counts.Leave}</b><span>Leave</span></div><div class="stat"><b>${counts.Holiday}</b><span>Holiday</span></div></div>${rows}`)
+}
+function homework(){
+ let body=addBtn('Add Homework',`modal('homework')`);
+ db.homework.forEach((x,i)=>body+=`<div class="card item"><h3>${esc(x.title)}</h3><div class="info-row"><div>Assigned Date: ${esc(x.assigned)}</div><div>Class Id: ${esc(x.class)}</div><div>Subject: ${esc(x.subject)}</div><div>Due Date: ${esc(x.due)}</div><div>Description: ${esc(x.description)}</div><div>Title: ${esc(x.title)}</div></div>${cardActions(`modal('homework',${i})`,`del('homework',${i})`)}</div>`);
+ layout('Homework','Manage Homework',body)
+}
+function notices(){
+ let body=addBtn('Add Notices',`modal('notice')`);
+ db.notices.forEach((x,i)=>body+=`<div class="card item"><h3>${esc(x.title)}</h3><div class="info-row"><div>Date: ${esc(x.date)}</div><div>Class Id:</div><div class="notice">Description: ${esc(x.description)}</div><div>Title: ${esc(x.title)}</div></div>${cardActions(`modal('notice',${i})`,`del('notices',${i})`)}</div>`);
+ layout('Notices','Manage Notices',body)
+}
+function reports(){
+ let body=addBtn('Add Report Cards',`modal('report')`);
+ db.reports.forEach((x,i)=>body+=`<div class="card item"><h3>${esc(x.subject)}</h3><div class="info-row"><div>Student Id: ${esc(x.student)}</div><div>Subject: ${esc(x.subject)}</div><div>Grade: ${esc(x.grade)}</div><div>Marks: ${esc(x.marks)}</div><div>Attendance: ${esc(x.attendance)}</div><div>Remarks: ${esc(x.remarks)}</div><div>Max Marks: ${esc(x.max)}</div></div>${cardActions(`modal('report',${i})`,`del('reports',${i})`,`<button onclick="printReport(${i})">PDF</button>`)}</div>`);
+ layout('Report Cards','Manage Report Cards',body)
+}
+function profile(){
+ layout('Institution Profile','Your coaching center',`<div class="card profile-box"><div class="profile-label">Institution Name</div><div class="profile-value">${esc(db.institution.name)}</div></div><div class="card profile-box"><div class="profile-label">Institution ID</div><div class="profile-value">${esc(db.institution.id)}</div></div><div class="card profile-box"><div class="profile-label">Owner UID</div><div class="profile-value" style="font-size:25px;word-break:break-all">${esc(db.institution.owner)}</div></div>`)
+}
+function modal(type,idx=-1){
+ const x=idx>=0?db[type==='class'?'classes':type==='student'?'students':type==='fee'?'fees':type==='homework'?'homework':type==='notice'?'notices':'reports'][idx]:{};
+ const title=idx>=0?'Edit ':'Add ';
+ let fields='';
+ if(type==='student') fields=`<div class="field"><input id="f_name" placeholder="Name" value="${esc(x.name)}"></div><div class="field"><input id="f_email" placeholder="Email" value="${esc(x.email)}"></div><div class="field"><input id="f_mobile" placeholder="Mobile" value="${esc(x.mobile)}"></div><div class="field"><input id="f_guardian" placeholder="Guardian" value="${esc(x.guardian)}"></div><div class="field"><input id="f_address" placeholder="Address" value="${esc(x.address)}"></div><div class="field"><label>Gender</label><select id="f_gender"><option>Male</option><option>Female</option><option>Other</option></select></div><div class="field"><label>Class</label><select id="f_class">${db.classes.map(c=>`<option>${esc(c.name)}</option>`).join('')}</select></div><div class="field"><input id="f_admission" placeholder="Admission Date" value="${esc(x.admission)}"></div><div class="field"><input id="f_password" type="password" placeholder="Password"></div>`;
+ if(type==='class') fields=`<div class="field"><input id="f_name" placeholder="Name" value="${esc(x.name)}"></div><div class="field"><input id="f_teacher" placeholder="Teacher" value="${esc(x.teacher)}"></div><div class="field"><input id="f_room" placeholder="Room" value="${esc(x.room)}"></div><div class="field"><input id="f_timing" placeholder="Timing" value="${esc(x.timing)}"></div>`;
+ if(type==='fee') fields=`<div class="field"><input id="f_student" placeholder="Student Id" value="${esc(x.student)}"></div><div class="field"><input id="f_total" placeholder="Total Amount" value="${esc(x.total)}"></div><div class="field"><input id="f_mode" placeholder="Payment Mode" value="${esc(x.mode)}"></div><div class="field"><input id="f_date" placeholder="Payment Date" value="${esc(x.date)}"></div><div class="field"><input id="f_type" placeholder="Fee Type" value="${esc(x.type)}"></div><div class="field"><input id="f_paid" placeholder="Paid Amount" value="${esc(x.paid)}"></div><div class="field"><input id="f_pending" placeholder="Pending Amount" value="${esc(x.pending)}"></div><div class="field"><input id="f_remarks" placeholder="Remarks" value="${esc(x.remarks)}"></div>`;
+ if(type==='homework') fields=`<div class="field"><input id="f_subject" placeholder="Subject" value="${esc(x.subject)}"></div><div class="field"><input id="f_title" placeholder="Title" value="${esc(x.title)}"></div><div class="field"><textarea id="f_description" placeholder="Description">${esc(x.description)}</textarea></div><div class="field"><input id="f_assigned" placeholder="Assigned Date" value="${esc(x.assigned)}"></div><div class="field"><input id="f_due" placeholder="Due Date" value="${esc(x.due)}"></div><div class="field"><label>Class</label><select id="f_class">${db.classes.map(c=>`<option>${esc(c.name)}</option>`).join('')}</select></div>`;
+ if(type==='notice') fields=`<div class="field"><input id="f_title" placeholder="Title" value="${esc(x.title)}"></div><div class="field"><textarea id="f_description" placeholder="Description">${esc(x.description)}</textarea></div><div class="field"><input id="f_date" placeholder="Date" value="${esc(x.date)}"></div><div class="field"><label>Class / Audience</label><select id="f_audience"><option>All Classes</option>${db.classes.map(c=>`<option>${esc(c.name)}</option>`).join('')}</select></div>`;
+ if(type==='report') fields=`<div class="field"><input id="f_student" placeholder="Student Id" value="${esc(x.student)}"></div><div class="field"><input id="f_subject" placeholder="Subject" value="${esc(x.subject)}"></div><div class="field"><input id="f_marks" placeholder="Marks" value="${esc(x.marks)}"></div><div class="field"><input id="f_max" placeholder="Max Marks" value="${esc(x.max)}"></div><div class="field"><input id="f_grade" placeholder="Grade" value="${esc(x.grade)}"></div><div class="field"><input id="f_remarks" placeholder="Remarks" value="${esc(x.remarks)}"></div><div class="field"><input id="f_attendance" placeholder="Attendance" value="${esc(x.attendance)}"></div>`;
+ const id='modal_'+Date.now();
+ app.insertAdjacentHTML('beforeend',`<div class="modal-bg" id="${id}" onclick="if(event.target===this)this.remove()"><div class="modal"><h2>${title}${type==='student'?'Students':type==='class'?'Classes':type==='fee'?'Fees':type==='homework'?'Homework':type==='notice'?'Notices':'Report Cards'}</h2>${fields}<div class="actions"><button onclick="document.getElementById('${id}').remove()">Cancel</button><button onclick="saveForm('${type}',${idx},'${id}')">Save</button></div></div></div>`);
+}
+function val(id){return document.getElementById(id)?.value||''}
+function saveForm(type,idx,mid){
+ let arrName=type==='class'?'classes':type==='student'?'students':type==='fee'?'fees':type==='homework'?'homework':type==='notice'?'notices':'reports';
+ let o={};
+ if(type==='student')o={name:val('f_name'),email:val('f_email'),mobile:val('f_mobile'),guardian:val('f_guardian'),address:val('f_address'),gender:val('f_gender'),class:val('f_class'),admission:val('f_admission')};
+ if(type==='class')o={name:val('f_name'),teacher:val('f_teacher'),room:val('f_room'),timing:val('f_timing')};
+ if(type==='fee')o={student:val('f_student'),total:val('f_total'),mode:val('f_mode'),date:val('f_date'),type:val('f_type'),paid:val('f_paid'),pending:val('f_pending'),remarks:val('f_remarks')};
+ if(type==='homework')o={subject:val('f_subject'),title:val('f_title'),description:val('f_description'),assigned:val('f_assigned'),due:val('f_due'),class:val('f_class')};
+ if(type==='notice')o={title:val('f_title'),description:val('f_description'),date:val('f_date'),audience:val('f_audience')};
+ if(type==='report')o={student:val('f_student'),subject:val('f_subject'),marks:val('f_marks'),max:val('f_max'),grade:val('f_grade'),remarks:val('f_remarks'),attendance:val('f_attendance')};
+ if(idx>=0)db[arrName][idx]=o;else db[arrName].push(o);save();document.getElementById(mid).remove();show(type==='class'?'classes':type==='student'?'students':type==='fee'?'fees':type==='homework'?'homework':type==='notice'?'notices':'reports');
+}
+function del(arr,i){if(confirm('Delete this item?')){db[arr].splice(i,1);save();show(arr==='classes'?'classes':arr==='students'?'students':arr)}}
+function printReport(i){let x=db.reports[i],w=window.open('','_blank');w.document.write(`<html><head><title>TeachMate Report Card</title><style>body{font-family:Arial;padding:40px}h1{color:#294b97}table{width:100%;border-collapse:collapse}td,th{border:1px solid #ccc;padding:12px;text-align:left}</style></head><body><h1>TEACHMATE</h1><h2>Report Card</h2><table>${Object.entries(x).map(([k,v])=>`<tr><th>${k}</th><td>${v||''}</td></tr>`).join('')}</table><script>window.print()<\/script></body></html>`);w.document.close()}
+dashboard();
+</script>
+
+</body>
+</html>
